@@ -1,10 +1,26 @@
 #!/bin/sh
-# Tre: bật/tắt tự đăng nhập tài khoản học sinh theo cờ /etc/tre/tat-tu-dang-nhap
+# Tre: chọn tài khoản tự đăng nhập khi bật máy
+#   - có tài khoản hocsinh -> tự vào hocsinh
+#   - chưa có              -> tự vào giaovien
+#   - giáo viên đã tắt tự đăng nhập (/etc/tre/tat-tu-dang-nhap) -> hiện màn hình đăng nhập
 set -e
 DICH=/etc/lightdm/lightdm.conf.d/60-tre-tu-dang-nhap.conf
 mkdir -p /etc/lightdm/lightdm.conf.d
-if [ -e /etc/tre/tat-tu-dang-nhap ]; then
-    rm -f "$DICH"
-else
-    ln -sf /usr/share/tre/lightdm/60-tre-tu-dang-nhap.conf "$DICH"
+AI=""
+if id hocsinh >/dev/null 2>&1; then AI=hocsinh
+elif id giaovien >/dev/null 2>&1; then AI=giaovien
 fi
+if [ -e /etc/tre/tat-tu-dang-nhap ] || [ -z "$AI" ]; then
+    rm -f "$DICH"
+    exit 0
+fi
+cat > "$DICH.tam" <<EOC
+# Tre: bật máy là tự vào tài khoản "$AI" (tạo tự động, đừng sửa tay).
+# Tắt: sudo tre-quan-ly tu-dang-nhap tat
+[Seat:*]
+autologin-user=$AI
+autologin-user-timeout=0
+autologin-session=xfce
+user-session=xfce
+EOC
+mv "$DICH.tam" "$DICH"

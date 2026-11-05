@@ -73,36 +73,24 @@ if [ -f /etc/default/im-config ]; then
     sed -i 's/^IM_CONFIG_DEFAULT_MODE=.*/IM_CONFIG_DEFAULT_MODE=fcitx5/' /etc/default/im-config
 fi
 
-# ---- 6. Tài khoản học sinh: không mật khẩu, không quyền quản trị ----
-if ! id hocsinh >/dev/null 2>&1; then
-    # UID 1500: chừa số 1000 cho tài khoản quản trị (Live tạo "user", bộ cài tạo tài khoản giáo viên)
-    if getent passwd 1500 >/dev/null; then
-        useradd --create-home --shell /bin/bash --comment "Học sinh" hocsinh
-    else
-        useradd --uid 1500 --create-home --shell /bin/bash --comment "Học sinh" hocsinh
-    fi
-fi
-passwd -d hocsinh >/dev/null
+# ---- 6. Tài khoản ----
+#  - giaovien: tài khoản chính, có quyền quản trị, máy cài xong tự vào tài khoản này
+#  - hocsinh : KHÔNG tạo sẵn; giáo viên tạo khi cần bằng "sudo tre-quan-ly tao-hocsinh"
+#              (hoặc menu Tạo tài khoản học sinh). Có hocsinh thì máy tự vào hocsinh.
 for g in autologin nopasswdlogin; do groupadd -f "$g"; done
-for g in audio video plugdev netdev users autologin nopasswdlogin; do
-    getent group "$g" >/dev/null && usermod -aG "$g" hocsinh || true
-done
-gpasswd -d hocsinh sudo >/dev/null 2>&1 || true
 mkdir -p /etc/tre /var/lib/tre
-"$TRE/ap-dung-tu-dang-nhap"
-
-# ---- 7. Khôi phục tài khoản học sinh mỗi lần khởi động ----
 if command -v deb-systemd-helper >/dev/null 2>&1; then
     deb-systemd-helper enable tre-khoi-phuc-hocsinh.service >/dev/null || true
     deb-systemd-helper enable tre-kiem-tra-giao-vien.service >/dev/null || true
 elif command -v systemctl >/dev/null 2>&1; then
     systemctl enable tre-khoi-phuc-hocsinh.service tre-kiem-tra-giao-vien.service >/dev/null 2>&1 || true
 fi
-# Máy đã cài mà chưa có tài khoản quản trị -> tạo ngay (không chờ khởi động lại).
-# Không chạy lúc dựng ISO (trong chroot).
+# Máy đã cài: tạo tài khoản giaovien ngay (lúc dựng ISO / chạy Live thì bỏ qua,
+# máy cài xong sẽ tự tạo ở lần khởi động đầu tiên)
 if ! ischroot 2>/dev/null && [ ! -d /run/live ]; then
     /usr/sbin/tre-kiem-tra-giao-vien || true
 fi
+"$TRE/ap-dung-tu-dang-nhap"
 
 # ---- 7b. Tre Văn phòng: tên tiếng Việt trong menu (cấu hình mặc định nằm ở tre.xcd) ----
 "$TRE/tao-ten-van-phong" || true

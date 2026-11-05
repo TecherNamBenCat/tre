@@ -15,6 +15,11 @@ MAU="${TRE_MAU:-/var/lib/tre/hocsinh-mau}"
 TAT="${TRE_CO_TAT:-/etc/tre/tat-khoi-phuc}"
 GIU_LAI="LuuBai"
 
+# Chưa có tài khoản học sinh (giáo viên chưa tạo) thì không làm gì
+if ! id "$TEN_HS" >/dev/null 2>&1 && [[ -z "${TRE_NHA_HS:-}" ]]; then
+    exit 0
+fi
+
 # Giáo viên đã tạm tắt chế độ khôi phục
 if [[ -e "$TAT" ]]; then
     echo "Tre: chế độ khôi phục đang TẮT, bỏ qua."

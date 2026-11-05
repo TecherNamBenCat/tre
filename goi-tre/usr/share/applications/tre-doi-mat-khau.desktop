@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Đổi mật khẩu giáo viên
+Comment=Đổi mật khẩu tài khoản giaovien
+Icon=dialog-password
+Exec=xfce4-terminal --hold --title="Đổi mật khẩu giáo viên" -x passwd
+Categories=Settings;System;
+OnlyShowIn=XFCE;

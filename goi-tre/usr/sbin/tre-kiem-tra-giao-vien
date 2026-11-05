@@ -1,30 +1,24 @@
 #!/bin/bash
 # =============================================================
-#  Tre — lưới an toàn: máy đã cài mà KHÔNG có tài khoản quản trị nào
-#  (vd bộ cài bỏ qua bước tạo tài khoản) thì tự tạo tài khoản giáo viên:
-#      tên: giaovien   mật khẩu tạm: giaovien
-#  Lần đăng nhập đầu tiên máy BẮT BUỘC đổi mật khẩu mới.
-#  Không làm gì trong bản Live, hoặc khi đã có tài khoản quản trị.
+#  Tre — đảm bảo máy đã cài luôn có tài khoản giáo viên
+#      tên: giaovien      mật khẩu ban đầu: giaovien
+#  Chạy mỗi lần khởi động (trước màn hình đăng nhập) và khi cập nhật.
+#  Không làm gì trong bản Live. Đổi mật khẩu: sudo tre-quan-ly doi-mat-khau
 # =============================================================
 set -euo pipefail
-[[ -d /run/live ]] && exit 0                       # đang chạy Live
-
-co_quan_tri=0
-for g in sudo admin; do
-    thanh_vien=$(getent group "$g" | cut -d: -f4) || true
-    for u in ${thanh_vien//,/ }; do
-        uid=$(id -u "$u" 2>/dev/null || echo 0)
-        if [[ "$uid" -ge 1000 && "$u" != hocsinh ]]; then co_quan_tri=1; fi
-    done
-done
-[[ "$co_quan_tri" == 1 ]] && exit 0
+[[ -d /run/live ]] && exit 0
 
 if ! id giaovien >/dev/null 2>&1; then
-    useradd --create-home --shell /bin/bash --comment "Giáo viên" giaovien
+    # UID 1000 nếu còn trống (tài khoản người dùng đầu tiên của máy)
+    if getent passwd 1000 >/dev/null; then
+        useradd --create-home --shell /bin/bash --comment "Giáo viên" giaovien
+    else
+        useradd --uid 1000 --create-home --shell /bin/bash --comment "Giáo viên" giaovien
+    fi
+    echo 'giaovien:giaovien' | chpasswd
+    echo "Tre: đã tạo tài khoản giáo viên 'giaovien' (mật khẩu ban đầu: giaovien)."
 fi
-echo 'giaovien:giaovien' | chpasswd
-chage -d 0 giaovien                                # bắt đổi mật khẩu lần đầu
-for g in sudo adm audio video plugdev netdev users lpadmin; do
+for g in sudo adm audio video plugdev netdev users lpadmin autologin; do
     getent group "$g" >/dev/null && usermod -aG "$g" giaovien || true
 done
-echo "Tre: đã tạo tài khoản giáo viên dự phòng 'giaovien' (phải đổi mật khẩu khi đăng nhập lần đầu)."
+/usr/share/tre/ap-dung-tu-dang-nhap

@@ -76,17 +76,14 @@ sudo ./build.sh --nguon
 
 ### Tài khoản
 
-| Tài khoản | Mật khẩu | Quyền |
+| Tài khoản | Mật khẩu | Ghi chú |
 |---|---|---|
-| `hocsinh` | **không có** — bật máy là tự vào | Học sinh, **không** cài/xoá được phần mềm |
-| Giáo viên (tạo lúc cài đặt) | giáo viên tự đặt | Quản trị |
+| `giaovien` | ban đầu là **`giaovien`** — đổi ngay bằng menu **Đổi mật khẩu giáo viên** | Quản trị. Cài xong máy **tự vào** tài khoản này |
+| `hocsinh` | **không có** | **Không tạo sẵn.** Giáo viên tạo khi cần: menu **Tạo tài khoản học sinh** (hoặc `sudo tre-quan-ly tao-hocsinh`). Có tài khoản này thì máy tự vào `hocsinh` |
+| `user` | `live` | Chỉ có trong bản **Live** (chạy từ ISO/USB), để mở bộ cài đặt |
 
-> **Lưới an toàn:** nếu máy đã cài mà không có tài khoản quản trị nào (vd bộ cài bỏ qua bước tạo tài khoản),
-> Tre tự tạo tài khoản **`giaovien`**, mật khẩu tạm **`giaovien`** — lần đăng nhập đầu **bắt buộc đổi mật khẩu**.
-> Giáo viên nên đăng nhập và đổi mật khẩu ngay sau khi cài.
-
-Giáo viên vào tài khoản của mình: **Đăng xuất** khỏi tài khoản học sinh → chọn tài khoản giáo viên.
-Muốn tắt/bật tự đăng nhập: `sudo tre-quan-ly tu-dang-nhap tat` (hoặc `bat`).
+Giáo viên vào tài khoản của mình khi máy đang ở tài khoản học sinh: **Đăng xuất** → chọn **Giáo viên**.
+Xoá tài khoản học sinh: `sudo tre-quan-ly xoa-hocsinh`. Tắt/bật tự đăng nhập: `sudo tre-quan-ly tu-dang-nhap tat|bat`.
 
 ### Chế độ tự khôi phục (giống Deep Freeze)
 

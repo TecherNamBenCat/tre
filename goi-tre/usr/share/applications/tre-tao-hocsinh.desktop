@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Tạo tài khoản học sinh
+Comment=Tạo tài khoản hocsinh (không mật khẩu, tự khôi phục mỗi lần khởi động)
+Icon=system-users
+Exec=xfce4-terminal --hold --title="Tạo tài khoản học sinh" -x sudo /usr/sbin/tre-quan-ly tao-hocsinh
+Categories=Settings;System;
+OnlyShowIn=XFCE;

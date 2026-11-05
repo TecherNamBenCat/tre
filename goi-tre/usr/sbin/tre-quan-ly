@@ -16,6 +16,11 @@ huong_dan() {
     cat <<'HD'
 Cách dùng:  sudo tre-quan-ly <lệnh>
 
+  tao-hocsinh        Tạo tài khoản học sinh "hocsinh" (không mật khẩu, không quyền quản trị,
+                     tự khôi phục mỗi lần khởi động). Tạo xong máy tự vào tài khoản này.
+  xoa-hocsinh        Xoá tài khoản học sinh (máy quay lại tự vào tài khoản giáo viên)
+  doi-mat-khau       Đổi mật khẩu tài khoản giáo viên
+
   phien-ban          Xem phiên bản Tre đang chạy
   cap-nhat           Cập nhật Tre NGAY (bình thường máy tự cập nhật mỗi ngày)
 
@@ -46,6 +51,41 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 case "${1:-}" in
+    tao-hocsinh)
+        if id "$TEN_HS" >/dev/null 2>&1; then
+            echo "Đã có tài khoản $TEN_HS rồi."
+        else
+            if getent passwd 1500 >/dev/null; then
+                useradd --create-home --shell /bin/bash --comment "Học sinh" "$TEN_HS"
+            else
+                useradd --uid 1500 --create-home --shell /bin/bash --comment "Học sinh" "$TEN_HS"
+            fi
+            echo "Đã tạo tài khoản $TEN_HS."
+        fi
+        passwd -d "$TEN_HS" >/dev/null
+        for g in audio video plugdev netdev users autologin nopasswdlogin; do
+            getent group "$g" >/dev/null && usermod -aG "$g" "$TEN_HS" || true
+        done
+        gpasswd -d "$TEN_HS" sudo >/dev/null 2>&1 || true
+        rm -rf "$MAU"                      # bản mẫu tạo lại từ đầu
+        /usr/sbin/tre-khoi-phuc-hocsinh
+        /usr/share/tre/ap-dung-tu-dang-nhap
+        echo "Xong. Từ lần khởi động sau, máy tự vào tài khoản học sinh (không mật khẩu)."
+        echo "Giáo viên vào lại tài khoản của mình: Đăng xuất -> chọn Giáo viên."
+        ;;
+    xoa-hocsinh)
+        if ! id "$TEN_HS" >/dev/null 2>&1; then echo "Chưa có tài khoản $TEN_HS."; exit 0; fi
+        read -r -p "Xoá tài khoản $TEN_HS và TOÀN BỘ bài trong LuuBai? (c/k) " tl
+        if [[ "$tl" == "c" ]]; then
+            userdel -r "$TEN_HS" 2>/dev/null || userdel "$TEN_HS"
+            rm -rf "$MAU"
+            /usr/share/tre/ap-dung-tu-dang-nhap
+            echo "Đã xoá. Máy sẽ tự vào tài khoản giáo viên."
+        fi
+        ;;
+    doi-mat-khau)
+        passwd giaovien
+        ;;
     cap-nhat)
         echo ">> Đang tải danh sách cập nhật..."
         apt-get update
