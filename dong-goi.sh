@@ -23,6 +23,7 @@ rm "$GOI/DEBIAN/control.mau"
 KHOA="$GOC/kho-apt/tre-archive-keyring.gpg"
 if [[ -f "$KHOA" && "$DIA_CHI_KHO" != *TEN-TAI-KHOAN* ]]; then
     install -Dm644 "$KHOA" "$GOI/usr/share/keyrings/tre-archive-keyring.gpg"
+    mkdir -p "$GOI/etc/apt/sources.list.d"
     sed "s|@@DIA_CHI_KHO@@|$DIA_CHI_KHO|" "$GOI/usr/share/tre/tre.sources.mau" \
         > "$GOI/etc/apt/sources.list.d/tre.sources"
     echo ">> Kho cập nhật: $DIA_CHI_KHO"
