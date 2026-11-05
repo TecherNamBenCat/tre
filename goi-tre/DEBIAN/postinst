@@ -94,8 +94,14 @@ mkdir -p /etc/tre /var/lib/tre
 # ---- 7. Khôi phục tài khoản học sinh mỗi lần khởi động ----
 if command -v deb-systemd-helper >/dev/null 2>&1; then
     deb-systemd-helper enable tre-khoi-phuc-hocsinh.service >/dev/null || true
+    deb-systemd-helper enable tre-kiem-tra-giao-vien.service >/dev/null || true
 elif command -v systemctl >/dev/null 2>&1; then
-    systemctl enable tre-khoi-phuc-hocsinh.service >/dev/null 2>&1 || true
+    systemctl enable tre-khoi-phuc-hocsinh.service tre-kiem-tra-giao-vien.service >/dev/null 2>&1 || true
+fi
+# Máy đã cài mà chưa có tài khoản quản trị -> tạo ngay (không chờ khởi động lại).
+# Không chạy lúc dựng ISO (trong chroot).
+if ! ischroot 2>/dev/null && [ ! -d /run/live ]; then
+    /usr/sbin/tre-kiem-tra-giao-vien || true
 fi
 
 # ---- 7b. Tre Văn phòng: tên tiếng Việt trong menu (cấu hình mặc định nằm ở tre.xcd) ----

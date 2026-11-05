@@ -81,6 +81,10 @@ sudo ./build.sh --nguon
 | `hocsinh` | **không có** — bật máy là tự vào | Học sinh, **không** cài/xoá được phần mềm |
 | Giáo viên (tạo lúc cài đặt) | giáo viên tự đặt | Quản trị |
 
+> **Lưới an toàn:** nếu máy đã cài mà không có tài khoản quản trị nào (vd bộ cài bỏ qua bước tạo tài khoản),
+> Tre tự tạo tài khoản **`giaovien`**, mật khẩu tạm **`giaovien`** — lần đăng nhập đầu **bắt buộc đổi mật khẩu**.
+> Giáo viên nên đăng nhập và đổi mật khẩu ngay sau khi cài.
+
 Giáo viên vào tài khoản của mình: **Đăng xuất** khỏi tài khoản học sinh → chọn tài khoản giáo viên.
 Muốn tắt/bật tự đăng nhập: `sudo tre-quan-ly tu-dang-nhap tat` (hoặc `bat`).
 
