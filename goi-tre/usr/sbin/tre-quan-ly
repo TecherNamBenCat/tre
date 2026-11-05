@@ -21,6 +21,9 @@ Cách dùng:  sudo tre-quan-ly <lệnh>
   xoa-hocsinh        Xoá tài khoản học sinh (máy quay lại tự vào tài khoản giáo viên)
   doi-mat-khau       Đổi mật khẩu tài khoản giáo viên
 
+  man-hinh-dong bat  Bật màn hình động khi bật/tắt máy (chỉ nên bật trên máy thật)
+  man-hinh-dong tat  Tắt màn hình động
+
   phien-ban          Xem phiên bản Tre đang chạy
   cap-nhat           Cập nhật Tre NGAY (bình thường máy tự cập nhật mỗi ngày)
 
@@ -82,6 +85,18 @@ case "${1:-}" in
             /usr/share/tre/ap-dung-tu-dang-nhap
             echo "Đã xoá. Máy sẽ tự vào tài khoản giáo viên."
         fi
+        ;;
+    man-hinh-dong)
+        G=/etc/default/grub
+        [[ -f "$G" ]] || { echo "Không thấy $G"; exit 1; }
+        case "${2:-}" in
+            bat) grep -q '^GRUB_CMDLINE_LINUX_DEFAULT=.*splash' "$G" || \
+                 sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 splash"/' "$G" ;;
+            tat) sed -i '/^GRUB_CMDLINE_LINUX_DEFAULT=/ s/ *splash//' "$G" ;;
+            *)   echo "Dùng: sudo tre-quan-ly man-hinh-dong bat|tat"; exit 1 ;;
+        esac
+        update-grub
+        echo "Xong. Có hiệu lực từ lần khởi động sau."
         ;;
     doi-mat-khau)
         passwd giaovien
