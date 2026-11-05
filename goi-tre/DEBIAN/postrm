@@ -15,6 +15,9 @@ case "$1" in
         tra_lai /etc/calamares/modules/locale.conf
         rm -f /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml
         rm -f /etc/lightdm/lightdm.conf.d/60-tre-tu-dang-nhap.conf
+        rm -f /usr/local/share/applications/libreoffice-writer.desktop \
+              /usr/local/share/applications/libreoffice-calc.desktop \
+              /usr/local/share/applications/libreoffice-impress.desktop
         ;;
 esac
 if [ "$1" = "purge" ]; then

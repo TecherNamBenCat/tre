@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Đổi hình nền
+Comment=Chọn hình nền trong bộ ảnh của Tre
+Icon=preferences-desktop-wallpaper
+Exec=xfdesktop-settings
+Categories=Settings;DesktopSettings;
+OnlyShowIn=XFCE;

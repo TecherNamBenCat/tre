@@ -18,6 +18,11 @@ chuyen_huong() {   # $1 = file gốc của gói khác, $2 = file của Tre sẽ 
     cp "$2" "$1.tre-moi" && mv "$1.tre-moi" "$1"
 }
 
+# LibreOffice vừa cập nhật -> tạo lại tên Tre Soạn thảo / Bảng tính / Trình chiếu
+if [ "$1" = "triggered" ]; then
+    "$TRE/tao-ten-van-phong" || true
+    exit 0
+fi
 [ "$1" = "configure" ] || exit 0
 LAN_DAU=0
 [ -z "$2" ] && LAN_DAU=1
@@ -92,6 +97,9 @@ if command -v deb-systemd-helper >/dev/null 2>&1; then
 elif command -v systemctl >/dev/null 2>&1; then
     systemctl enable tre-khoi-phuc-hocsinh.service >/dev/null 2>&1 || true
 fi
+
+# ---- 7b. Tre Văn phòng: tên tiếng Việt trong menu (cấu hình mặc định nằm ở tre.xcd) ----
+"$TRE/tao-ten-van-phong" || true
 
 # ---- 8. Biểu tượng ----
 gtk-update-icon-cache -q /usr/share/icons/hicolor 2>/dev/null || true

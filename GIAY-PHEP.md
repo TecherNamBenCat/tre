@@ -17,11 +17,13 @@ Giấy phép GPL ràng buộc khi **phân phối** phần mềm cho người kh�
 |---|---|---|
 | Nhân Linux, công cụ hệ thống, phần lớn gói Debian | GPL | Đăng **ISO mã nguồn** (`sudo ./build.sh --nguon`) cùng chỗ với ISO cài đặt |
 | Firefox ESR | MPL 2.0 | Dùng nguyên bản của Debian nên giữ được tên. **Nếu sửa** Firefox thì phải đổi tên, logo và công khai phần sửa |
-| LibreOffice | MPL 2.0 | Dùng nguyên bản, không phải làm thêm |
+| LibreOffice ("Tre Văn phòng") | MPL 2.0 | Dùng nguyên bản; Tre chỉ đổi **tên lối tắt trong menu** và **cài đặt mặc định** (`tre.xcd`), không sửa chương trình. Tên/logo "LibreOffice" là nhãn hiệu của The Document Foundation: Tre ghi "dựa trên LibreOffice", không dùng logo LibreOffice cho thương hiệu Tre |
+| Phông chữ | OFL / GPL | Tre **không** kèm phông Times New Roman, Calibri (của Microsoft); dùng Liberation, Carlito, Caladea cùng kích thước. **Không chép phông từ Windows sang Tre** |
 | Kịch bản dựng, gói `tre-he-thong`, lệnh `tre-quan-ly` (do dự án Tre viết) | **GPL-3.0** (file `LICENSE`) | Đăng toàn bộ thư mục này lên GitHub |
 | Kho cập nhật (GitHub Pages) | — | Chỉ chứa gói `tre-he-thong` của Tre; phần mềm Debian vẫn tải từ kho Debian chính thức |
 | Logo Tre | **CC BY-SA 4.0** | Ghi rõ trong README; người khác dùng lại phải ghi nguồn |
-| Ảnh hình nền, màn hình bật/tắt máy (`tai-nguyen/anh-goc/`) | Thầy Nam tạo bằng công cụ AI | Kiểm tra điều khoản của công cụ AI đã dùng trước khi phát hành rộng |
+| Ảnh màn hình bật/tắt máy và hình nền 01–03 (`tai-nguyen/anh-goc/`, `tai-nguyen/hinh-nen-goc/`) | Thầy Nam tạo bằng công cụ AI | Kiểm tra điều khoản của công cụ AI đã dùng trước khi phát hành rộng |
+| Hình nền 04–16 (ảnh phong cảnh) | Ảnh do thầy Nam cung cấp | Chỉ dùng ảnh do người trong trường tự chụp hoặc ảnh có giấy phép tự do |
 | Phần mềm riêng của trường (Quản Lý Phòng Máy...) | Tác giả tự chọn | **Không bắt buộc** công khai, miễn là không chép mã GPL vào |
 | TurboWarp (Scratch 3) nếu thêm vào | GPL-3.0 | Ghi đường dẫn tới mã nguồn của TurboWarp trong README |
 

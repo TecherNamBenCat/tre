@@ -14,7 +14,8 @@ Người khởi xướng: Thầy Trần Huỳnh Nhựt Nam — Trường THCS L�
 | Giao diện | XFCE nhẹ, một thanh tác vụ ở dưới, nút "Tre" giống nút Start |
 | Tiếng Việt | Giao diện tiếng Việt, bộ gõ **Bamboo** (Telex), bấm `Ctrl + Space` để bật/tắt |
 | Internet | Firefox (tiếng Việt) |
-| Văn phòng | LibreOffice: soạn thảo, bảng tính, trình chiếu; font tương thích Word (Carlito, Caladea, Liberation) |
+| Văn phòng | **Tre Văn phòng** (dựa trên LibreOffice): *Tre Soạn thảo, Tre Bảng tính, Tre Trình chiếu*; giao diện dạng thẻ giống Ribbon; tự lưu .docx/.xlsx/.pptx; phông Times New Roman 14 |
+| Hình nền | 16 ảnh trong `/usr/share/backgrounds/tre`; đổi bằng menu **Tre → Cài đặt → Đổi hình nền** (hoặc chuột phải màn hình nền) |
 | Lập trình | Python + Thonny |
 | Học tập | Freeplane (sơ đồ tư duy), Klavaro (luyện gõ phím), GCompris (trò chơi học tập) |
 | Phòng máy | Tài khoản **hocsinh** không mật khẩu, không có quyền quản trị, **tự khôi phục mỗi lần khởi động** |

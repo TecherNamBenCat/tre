@@ -37,7 +37,8 @@ rmdir "$GOI/usr/share/keyrings" "$GOI/etc/apt/sources.list.d" 2>/dev/null || tru
 find "$GOI" -type d -exec chmod 755 {} +
 find "$GOI" -type f -exec chmod 644 {} +
 chmod 755 "$GOI"/DEBIAN/postinst "$GOI"/DEBIAN/postrm \
-          "$GOI"/usr/bin/* "$GOI"/usr/sbin/* "$GOI"/usr/share/tre/ap-dung-tu-dang-nhap
+          "$GOI"/usr/bin/* "$GOI"/usr/sbin/* "$GOI"/usr/share/tre/ap-dung-tu-dang-nhap \
+          "$GOI"/usr/share/tre/tao-ten-van-phong
 
 # Kích thước cài đặt
 echo "Installed-Size: $(du -sk --exclude=DEBIAN "$GOI" | cut -f1)" >> "$GOI/DEBIAN/control"

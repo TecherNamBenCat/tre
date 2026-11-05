@@ -1,0 +1,40 @@
+#!/bin/sh
+# =============================================================
+#  Tre Văn phòng: đổi tên LibreOffice trong menu thành
+#    Tre Soạn thảo / Tre Bảng tính / Tre Trình chiếu
+#  Không sửa LibreOffice: chỉ tạo bản sao lối tắt (.desktop) trong
+#  /usr/local/share/applications (được ưu tiên hơn /usr/share/applications).
+#  Chạy lại tự động mỗi khi LibreOffice được cập nhật (dpkg trigger).
+# =============================================================
+set -e
+DICH=/usr/local/share/applications
+mkdir -p "$DICH"
+
+doi_ten() {   # $1 = writer|calc|impress   $2 = tên mới   $3 = mô tả   $4 = tên gốc LibreOffice
+    GOC="/usr/share/applications/libreoffice-$1.desktop"
+    RA="$DICH/libreoffice-$1.desktop"
+    if [ ! -f "$GOC" ]; then rm -f "$RA"; return 0; fi
+    # Chỉ đổi trong phần [Desktop Entry]; giữ nguyên phần còn lại (loại tệp mở được, lệnh chạy...)
+    awk -v ten="$2" -v mota="$3" -v goc="$4" '
+        /^\[/ { phan = $0 }
+        phan == "[Desktop Entry]" && /^(Name|GenericName|Comment)(\[[^]]*\])?=/ { next }
+        { print }
+        phan == "[Desktop Entry]" && /^\[Desktop Entry\]$/ {
+            print "Name=" ten
+            print "Name[vi]=" ten
+            print "GenericName=" mota
+            print "GenericName[vi]=" mota
+            print "Comment=" mota " (dựa trên " goc ")"
+            print "Comment[vi]=" mota " (dựa trên " goc ")"
+        }
+    ' "$GOC" > "$RA.tam"
+    mv "$RA.tam" "$RA"
+    chmod 644 "$RA"
+}
+
+doi_ten writer  "Tre Soạn thảo"   "Soạn thảo văn bản"     "LibreOffice Writer"
+doi_ten calc    "Tre Bảng tính"   "Bảng tính"             "LibreOffice Calc"
+doi_ten impress "Tre Trình chiếu" "Bài trình chiếu"       "LibreOffice Impress"
+
+command -v update-desktop-database >/dev/null 2>&1 && update-desktop-database -q "$DICH" || true
+exit 0
