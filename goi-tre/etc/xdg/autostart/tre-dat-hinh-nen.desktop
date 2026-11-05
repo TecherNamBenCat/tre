@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Tre - Đặt hình nền
+Exec=/usr/bin/tre-dat-hinh-nen
+OnlyShowIn=XFCE;
+NoDisplay=true
+X-XFCE-Autostart-Override=true

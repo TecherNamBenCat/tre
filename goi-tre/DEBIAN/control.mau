@@ -1,0 +1,15 @@
+Package: tre-he-thong
+Version: @@PHIEN_BAN@@
+Architecture: all
+Section: misc
+Priority: optional
+Maintainer: @@NGUOI_BAO_TRI@@
+Depends: plymouth, rsync, unattended-upgrades, lightdm, lightdm-gtk-greeter, xfce4-panel, xfce4-whiskermenu-plugin, xfconf, fcitx5, fcitx5-bamboo, im-config, locales, python3, firefox-esr, firefox-esr-l10n-vi, libreoffice-writer, libreoffice-calc, libreoffice-impress, libreoffice-l10n-vi, thonny, klavaro, gcompris-qt, fonts-noto-core, fonts-crosextra-carlito
+Recommends: fcitx5-frontend-gtk3, fcitx5-frontend-gtk4, fcitx5-frontend-qt5, fcitx5-config-qt, libreoffice-gtk3, fonts-liberation2, fonts-crosextra-caladea, fonts-dejavu, desktop-base
+Description: Tre - he dieu hanh hoc tap cho phong may THCS
+ Goi nay chua toan bo phan rieng cua Tre: giao dien, hinh nen,
+ man hinh bat/tat may, go tieng Viet, tai khoan hoc sinh tu khoi phuc,
+ cac phan mem hoc tap va che do tu dong cap nhat.
+ .
+ Khi goi nay duoc cap nhat tren kho cua Tre, moi may da cai se tu nhan
+ ban moi, khong can cai lai he dieu hanh.

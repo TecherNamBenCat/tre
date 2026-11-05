@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Tre
+Description=Tre: bật máy là cảnh học sinh đến trường, tắt máy là cảnh tan trường về
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/tre
+ScriptFile=/usr/share/plymouth/themes/tre/tre.script

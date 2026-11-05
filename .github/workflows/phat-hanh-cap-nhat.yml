@@ -1,0 +1,53 @@
+# Tre — tự động phát hành bản cập nhật
+# Mỗi lần có thay đổi trong goi-tre/ được đưa lên nhánh main:
+#   1) đóng gói tre-he-thong (.deb), phiên bản theo ngày giờ
+#   2) tạo kho cập nhật APT và ký bằng khoá TRE_KHOA_KY
+#   3) đưa kho lên GitHub Pages -> mọi máy Tre tự cập nhật trong vòng 1 ngày
+name: Phát hành bản cập nhật Tre
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "goi-tre/**"
+      - "cau-hinh/kho-cap-nhat.conf"
+      - "kho-apt/**"
+      - "dong-goi.sh"
+      - ".github/workflows/phat-hanh-cap-nhat.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  dong-goi:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cài công cụ
+        run: sudo apt-get update && sudo apt-get install -y apt-utils gnupg
+      - name: Đóng gói tre-he-thong
+        run: ./dong-goi.sh
+      - name: Tạo kho cập nhật có chữ ký
+        env:
+          TRE_KHOA_KY: ${{ secrets.TRE_KHOA_KY }}
+        run: ./kho-apt/tao-kho.sh site dist/*.deb
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  dua-len-mang:
+    needs: dong-goi
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.trien-khai.outputs.page_url }}
+    steps:
+      - id: trien-khai
+        uses: actions/deploy-pages@v4

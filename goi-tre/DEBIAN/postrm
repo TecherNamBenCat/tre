@@ -1,0 +1,23 @@
+#!/bin/sh
+# tre-he-thong: gỡ gói thì trả lại file gốc của các gói khác
+set -e
+GOI=tre-he-thong
+
+tra_lai() {
+    if [ -e "$1.truoc-tre" ]; then mv "$1.truoc-tre" "$1"; else rm -f "$1"; fi
+    dpkg-divert --package "$GOI" --no-rename --divert "$1.truoc-tre" --remove "$1" >/dev/null 2>&1 || true
+}
+
+case "$1" in
+    remove|purge)
+        tra_lai /usr/lib/os-release
+        tra_lai /etc/xdg/xfce4/panel/default.xml
+        tra_lai /etc/calamares/modules/locale.conf
+        rm -f /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml
+        rm -f /etc/lightdm/lightdm.conf.d/60-tre-tu-dang-nhap.conf
+        ;;
+esac
+if [ "$1" = "purge" ]; then
+    rm -rf /var/lib/tre /etc/tre
+fi
+exit 0

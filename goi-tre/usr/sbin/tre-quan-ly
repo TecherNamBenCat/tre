@@ -1,0 +1,100 @@
+#!/bin/bash
+# =============================================================
+#  Tre — Lệnh quản lý dành cho giáo viên
+#  Dùng:  sudo tre-quan-ly <lệnh>
+# =============================================================
+set -euo pipefail
+
+TEN_HS="${TRE_TEN_HS:-hocsinh}"
+NHA_HS="${TRE_NHA_HS:-/home/$TEN_HS}"
+MAU="${TRE_MAU:-/var/lib/tre/hocsinh-mau}"
+TAT="${TRE_CO_TAT:-/etc/tre/tat-khoi-phuc}"
+TAT_TU_DANG_NHAP=/etc/tre/tat-tu-dang-nhap
+GIU_LAI="LuuBai"
+
+huong_dan() {
+    cat <<'HD'
+Cách dùng:  sudo tre-quan-ly <lệnh>
+
+  phien-ban          Xem phiên bản Tre đang chạy
+  cap-nhat           Cập nhật Tre NGAY (bình thường máy tự cập nhật mỗi ngày)
+
+  trang-thai         Xem chế độ khôi phục tài khoản học sinh đang bật hay tắt
+  tat                Tạm TẮT khôi phục (để chỉnh tài khoản học sinh)
+  bat                BẬT lại khôi phục khi khởi động
+  luu-mau            Lấy tài khoản học sinh hiện tại làm bản mẫu mới
+  xoa-bai            Xoá sạch thư mục LuuBai của học sinh (đầu học kỳ mới)
+
+  tu-dang-nhap bat   Bật máy là tự vào tài khoản học sinh (mặc định)
+  tu-dang-nhap tat   Bật máy thì hiện màn hình chọn tài khoản
+
+Quy trình chỉnh bản mẫu cho học sinh:
+  1) sudo tre-quan-ly tat   2) khởi động lại, ở tài khoản hocsinh chỉnh sửa
+  3) đăng xuất, vào tài khoản giáo viên: sudo tre-quan-ly luu-mau
+  4) sudo tre-quan-ly bat
+HD
+}
+
+if [[ "${1:-}" == "phien-ban" ]]; then
+    dpkg-query -W -f='Tre ${Version}\n' tre-he-thong 2>/dev/null || echo "Chưa cài gói tre-he-thong"
+    exit 0
+fi
+
+if [[ $EUID -ne 0 ]]; then
+    echo "Cần quyền quản trị:  sudo tre-quan-ly ${1:-}"
+    exit 1
+fi
+
+case "${1:-}" in
+    cap-nhat)
+        echo ">> Đang tải danh sách cập nhật..."
+        apt-get update
+        echo ">> Đang cài bản cập nhật (giống chế độ tự động)..."
+        unattended-upgrade -v
+        dpkg-query -W -f='Xong. Tre hiện là phiên bản ${Version}\n' tre-he-thong
+        ;;
+    trang-thai)
+        if [[ -e "$TAT" ]]; then echo "Khôi phục: TẮT"; else echo "Khôi phục: BẬT"; fi
+        if [[ -e "$TAT_TU_DANG_NHAP" ]]; then echo "Tự đăng nhập: TẮT"; else echo "Tự đăng nhập: BẬT"; fi
+        ;;
+    tat)
+        mkdir -p "$(dirname "$TAT")"
+        touch "$TAT"
+        echo "Đã TẮT khôi phục. Thay đổi của tài khoản học sinh sẽ được giữ lại."
+        ;;
+    bat)
+        rm -f "$TAT"
+        echo "Đã BẬT khôi phục. Lần khởi động sau tài khoản học sinh sẽ trở về bản mẫu."
+        ;;
+    luu-mau)
+        if [[ ! -d "$NHA_HS" ]]; then
+            echo "Không thấy thư mục $NHA_HS"; exit 1
+        fi
+        mkdir -p "$MAU"
+        rsync -a --delete --exclude "/$GIU_LAI/" \
+              --exclude "/.cache/" --exclude "/.local/share/Trash/" \
+              "$NHA_HS/" "$MAU/"
+        mkdir -p "$MAU/$GIU_LAI"
+        echo "Đã lưu bản mẫu mới từ tài khoản $TEN_HS."
+        ;;
+    xoa-bai)
+        read -r -p "Xoá TOÀN BỘ bài trong $NHA_HS/$GIU_LAI? (c/k) " tl
+        if [[ "$tl" == "c" ]]; then
+            find "$NHA_HS/$GIU_LAI" -mindepth 1 -delete
+            echo "Đã xoá."
+        fi
+        ;;
+    tu-dang-nhap)
+        mkdir -p /etc/tre
+        case "${2:-}" in
+            bat) rm -f "$TAT_TU_DANG_NHAP" ;;
+            tat) touch "$TAT_TU_DANG_NHAP" ;;
+            *)   echo "Dùng: sudo tre-quan-ly tu-dang-nhap bat|tat"; exit 1 ;;
+        esac
+        /usr/share/tre/ap-dung-tu-dang-nhap
+        echo "Xong. Có hiệu lực từ lần khởi động sau."
+        ;;
+    *)
+        huong_dan
+        ;;
+esac

@@ -1,0 +1,24 @@
+#!/bin/bash
+# Tre: đặt hình nền chuẩn của Tre cho mọi màn hình khi đăng nhập.
+# Chỉ đặt khi Tre có hình nền MỚI (số trong PHIEN_BAN tăng lên), nên người dùng
+# vẫn tự đổi hình nền được; khi bản cập nhật mang hình nền mới thì máy tự đổi theo.
+THU_MUC=/usr/share/tre/hinh-nen
+HINH="$THU_MUC/tre-1920x1080.jpg"
+PB_MOI=$(cat "$THU_MUC/PHIEN_BAN" 2>/dev/null || echo 1)
+DANH_DAU="$HOME/.config/tre/phien-ban-hinh-nen"
+[[ "$(cat "$DANH_DAU" 2>/dev/null)" == "$PB_MOI" ]] && exit 0
+
+# Đợi xfdesktop tạo cấu hình màn hình
+for _ in $(seq 1 20); do
+    if xfconf-query -c xfce4-desktop -l 2>/dev/null | grep -q 'last-image'; then break; fi
+    sleep 1
+done
+
+xfconf-query -c xfce4-desktop -l 2>/dev/null | grep 'last-image$' | while read -r p; do
+    xfconf-query -c xfce4-desktop -p "$p" -s "$HINH"
+    xfconf-query -c xfce4-desktop -p "${p%last-image}image-style" -n -t int -s 5 2>/dev/null \
+        || xfconf-query -c xfce4-desktop -p "${p%last-image}image-style" -s 5
+done
+
+mkdir -p "$(dirname "$DANH_DAU")"
+echo "$PB_MOI" > "$DANH_DAU"

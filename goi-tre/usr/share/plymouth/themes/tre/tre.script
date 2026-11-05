@@ -1,0 +1,133 @@
+# =============================================================
+#  Tre — màn hình động khi bật / tắt máy (Plymouth script)
+#  Bật máy : cảnh buổi sáng đến trường, cò bay, thanh tiến trình đốt tre
+#  Tắt máy : cảnh hoàng hôn tan trường, cò bay về, tối dần
+# =============================================================
+
+Window.SetBackgroundTopColor(0, 0, 0);
+Window.SetBackgroundBottomColor(0, 0, 0);
+
+sw = Window.GetWidth();
+sh = Window.GetHeight();
+che_do = Plymouth.GetMode();
+sang = 1;
+global.k = sw / 1920;                       # co giãn chữ, thanh tiến trình, cò theo màn hình
+fun co_gian(img) { return img.Scale(img.GetWidth() * global.k, img.GetHeight() * global.k); }
+if (che_do == "shutdown" || che_do == "reboot") sang = 0;
+
+# ---------- nền: phóng to 108% rồi trượt chậm ----------
+if (sang) nen_goc = Image("nen-khoi-dong.png");
+else      nen_goc = Image("nen-tat-may.png");
+
+# bật máy: giữ nguyên khung (chữ "Tre" đã in sẵn trên ảnh); tắt máy: phóng 108% để trượt
+pt = 1.08;
+if (sang) pt = 1.0;
+tl = sw * pt / nen_goc.GetWidth();
+if (sh * pt / nen_goc.GetHeight() > tl) tl = sh * pt / nen_goc.GetHeight();
+nen_img = nen_goc.Scale(nen_goc.GetWidth() * tl, nen_goc.GetHeight() * tl);
+# bật máy: mọi thứ co giãn theo đúng tỉ lệ ảnh nền để thanh tiến trình luôn nằm dưới chữ "Tre"
+if (sang) global.k = tl;
+nen = Sprite(nen_img);
+nen.SetZ(-100);
+nen.SetY(-(nen_img.GetHeight() - sh) / 2);
+nen.SetOpacity(0);
+du_x = nen_img.GetWidth() - sw;
+
+# ---------- đàn cò ----------
+if (sang) { co_1 = co_gian(Image("co-trang-1.png")); co_2 = co_gian(Image("co-trang-2.png")); }
+else      { co_1 = co_gian(Image("co-toi-1.png"));   co_2 = co_gian(Image("co-toi-2.png")); }
+so_co = 4;
+for (i = 0; i < so_co; i++) {
+    co[i] = Sprite(co_1);
+    co[i].SetZ(10);
+    co_tre[i] = i * 0.12 + (i % 2) * 0.05;
+    co_y[i] = sh * (0.15 + (i % 3) * 0.04);
+    co_toc[i] = 1 - (i % 3) * 0.12;
+}
+
+# ---------- thanh đốt tre (chỉ khi bật máy) ----------
+so_dot = 10;
+dot_rong = co_gian(Image("dot-rong.png"));
+dot_day = co_gian(Image("dot-day.png"));
+khe = 5 * k;
+tong = so_dot * (dot_rong.GetWidth() + khe);
+x_thanh = 76 * k;                    # canh dưới chữ "Hệ điều hành học tập" in trên ảnh
+y_thanh = 948 * k - (nen_img.GetHeight() - sh) / 2;
+if (sang) {
+    for (i = 0; i < so_dot; i++) {
+        dot[i] = Sprite(dot_rong);
+        dot[i].SetPosition(x_thanh + i * (dot_rong.GetWidth() + khe), y_thanh, 30);
+    }
+    chu_img = co_gian(Image("chu-khoi-dong.png"));
+    chu = Sprite(chu_img);
+    chu.SetPosition(x_thanh - 16 * k, y_thanh + 18 * k, 30);
+} else {
+    if (che_do == "reboot") { chu_img = co_gian(Image("chu-khoi-dong-lai.png")); nen_chu_img = co_gian(Image("nen-chu-lai.png")); }
+    else                    { chu_img = co_gian(Image("chu-tat-may.png"));       nen_chu_img = co_gian(Image("nen-chu-tat.png")); }
+    nen_chu = Sprite(nen_chu_img);
+    nen_chu.SetPosition((sw - nen_chu_img.GetWidth()) / 2, sh * 0.82 - 4, 20);
+    chu = Sprite(chu_img);
+    chu.SetPosition((sw - chu_img.GetWidth()) / 2, sh * 0.82, 30);
+    den = Sprite(Image("den.png").Scale(sw, sh));
+    den.SetZ(1000);
+    den.SetOpacity(0);
+}
+chu.SetOpacity(0);
+
+global.tien_do = 0;
+global.nhip = 0;
+
+fun cap_nhat_tien_do(thoi_gian, tien) {
+    global.tien_do = tien;
+}
+Plymouth.SetBootProgressFunction(cap_nhat_tien_do);
+
+# ---------- mỗi khung hình (~50 lần/giây) ----------
+fun ve_lai() {
+    global.nhip = global.nhip + 1;
+    t = global.nhip / 50;           # giây
+
+    a = t / 0.8; if (a > 1) a = 1;
+    nen.SetOpacity(a);
+
+    # trượt chậm trong ~20 giây rồi đứng yên
+    u = t / 20; if (u > 1) u = 1;
+    if (sang) nen.SetX(0);          # bật máy: giữ yên, canh trái để chữ "Tre" luôn hiện đủ
+    else      nen.SetX(-du_x * (1 - u));
+
+    c = (t - 0.6) / 0.8; if (c < 0) c = 0; if (c > 1) c = 1;
+    chu.SetOpacity(c);
+
+    for (i = 0; i < so_co; i++) {
+        quang = (t - co_tre[i] * 4) * 170 * co_toc[i] * sw / 1920;
+        if (sang) x = -80 * k + quang;
+        else      x = sw + 80 * k - quang;
+        co[i].SetX(x);
+        co[i].SetY(co_y[i] + Math.Sin(t * 2 + co_tre[i] * 10) * 8 * k);
+        n = Math.Int(t * 5 + i * 3);
+        if (n - Math.Int(n / 2) * 2 == 0) co[i].SetImage(co_1);
+        else                              co[i].SetImage(co_2);
+    }
+
+    if (sang) {
+        for (i = 0; i < so_dot; i++) {
+            if ((i + 1) / so_dot <= global.tien_do + 0.0001) dot[i].SetImage(dot_day);
+            else                                             dot[i].SetImage(dot_rong);
+        }
+    } else {
+        toi = (t - 3) / 2.5; if (toi < 0) toi = 0; if (toi > 1) toi = 1;
+        den.SetOpacity(toi);
+    }
+}
+Plymouth.SetRefreshFunction(ve_lai);
+
+# ---------- hỏi mật khẩu (phòng khi ổ đĩa được mã hoá) ----------
+fun hoi_mat_khau(loi_nhac, so_cham) {
+    sao = "";
+    for (k = 0; k < so_cham; k++) sao = sao + "*";
+    global.o_mk = Sprite(Image.Text(loi_nhac + "  " + sao, 1, 1, 1));
+    global.o_mk.SetPosition(sw / 2 - 200, sh / 2, 2000);
+}
+Plymouth.SetDisplayPasswordFunction(hoi_mat_khau);
+fun binh_thuong() { global.o_mk = NULL; }
+Plymouth.SetDisplayNormalFunction(binh_thuong);

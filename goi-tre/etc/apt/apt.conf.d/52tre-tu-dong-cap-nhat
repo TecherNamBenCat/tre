@@ -1,0 +1,22 @@
+// Tre: tự động cập nhật giống Windows Update.
+// Mỗi ngày máy tự kiểm tra (2 lần, giờ ngẫu nhiên) và tự cài:
+//   - bản vá bảo mật + sửa lỗi của Debian
+//   - bản cập nhật của Tre (hình nền, cấu hình, phần mềm học tập mới...)
+APT::Periodic::Update-Package-Lists "1";
+APT::Periodic::Download-Upgradeable-Packages "1";
+APT::Periodic::Unattended-Upgrade "1";
+APT::Periodic::AutocleanInterval "7";
+
+Unattended-Upgrade::Origins-Pattern {
+    "origin=Debian,codename=${distro_codename},label=Debian";
+    "origin=Debian,codename=${distro_codename}-updates";
+    "origin=Debian,codename=${distro_codename},label=Debian-Security";
+    "origin=Debian,codename=${distro_codename}-security,label=Debian-Security";
+    "origin=Tre";
+};
+// Không tự khởi động lại máy giữa giờ học
+Unattended-Upgrade::Automatic-Reboot "false";
+Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";
+Unattended-Upgrade::Remove-Unused-Dependencies "true";
+// Máy tắt ngang khi đang cập nhật thì lần sau tự sửa
+Unattended-Upgrade::AutoFixInterruptedDpkg "true";

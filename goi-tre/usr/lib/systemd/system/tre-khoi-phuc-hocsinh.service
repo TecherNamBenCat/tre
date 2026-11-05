@@ -1,0 +1,12 @@
+[Unit]
+Description=Tre - Khoi phuc tai khoan hoc sinh ve ban mau
+After=local-fs.target
+Before=display-manager.service systemd-user-sessions.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/tre-khoi-phuc-hocsinh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

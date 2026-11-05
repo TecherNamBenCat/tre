@@ -1,0 +1,12 @@
+PRETTY_NAME="Tre 1.0 (Măng)"
+NAME="Tre"
+VERSION_ID="1.0"
+VERSION="1.0 (Măng)"
+VERSION_CODENAME=trixie
+DEBIAN_VERSION_CODENAME=trixie
+ID=tre
+ID_LIKE=debian
+LOGO=tre-logo
+HOME_URL="https://github.com/"
+SUPPORT_URL="https://github.com/"
+BUG_REPORT_URL="https://github.com/"

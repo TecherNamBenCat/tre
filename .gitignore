@@ -1,0 +1,8 @@
+# Khoá bí mật KHÔNG BAO GIỜ đưa lên GitHub
+khoa-bi-mat-tre.asc
+*.asc
+# Sản phẩm dựng
+dist/
+build/
+ket-qua/
+site/

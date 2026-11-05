@@ -1,0 +1,39 @@
+#!/bin/bash
+# =============================================================
+#  Tre — Khôi phục tài khoản học sinh mỗi lần khởi động máy
+#  (giống "đóng băng" Deep Freeze, nhưng chỉ áp dụng cho tài khoản hocsinh)
+#
+#  - Mọi thay đổi trong thư mục của học sinh bị xoá khi khởi động lại.
+#  - Riêng thư mục "LuuBai" được giữ lại để học sinh lưu bài làm.
+#  - Hệ thống không bị ảnh hưởng vì học sinh không có quyền quản trị.
+# =============================================================
+set -euo pipefail
+
+TEN_HS="${TRE_TEN_HS:-hocsinh}"
+NHA_HS="${TRE_NHA_HS:-/home/$TEN_HS}"
+MAU="${TRE_MAU:-/var/lib/tre/hocsinh-mau}"
+TAT="${TRE_CO_TAT:-/etc/tre/tat-khoi-phuc}"
+GIU_LAI="LuuBai"
+
+# Giáo viên đã tạm tắt chế độ khôi phục
+if [[ -e "$TAT" ]]; then
+    echo "Tre: chế độ khôi phục đang TẮT, bỏ qua."
+    exit 0
+fi
+
+# Lần đầu: tạo bản mẫu từ /etc/skel
+if [[ ! -d "$MAU" ]]; then
+    mkdir -p "$MAU"
+    cp -a /etc/skel/. "$MAU/"
+fi
+mkdir -p "$MAU/$GIU_LAI"
+
+mkdir -p "$NHA_HS"
+rsync -a --delete --exclude "/$GIU_LAI/" "$MAU/" "$NHA_HS/"
+mkdir -p "$NHA_HS/$GIU_LAI"
+
+if id "$TEN_HS" >/dev/null 2>&1; then
+    chown -R "$TEN_HS:$TEN_HS" "$NHA_HS"
+fi
+chmod 700 "$NHA_HS"
+echo "Tre: đã khôi phục tài khoản $TEN_HS."

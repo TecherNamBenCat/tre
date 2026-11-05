@@ -1,0 +1,115 @@
+#!/bin/sh
+# =============================================================
+#  tre-he-thong: áp dụng cấu hình Tre sau khi cài / cập nhật
+#  Chạy được nhiều lần (mỗi bản cập nhật đều chạy lại), không làm hỏng gì.
+# =============================================================
+set -e
+
+GOI=tre-he-thong
+TRE=/usr/share/tre
+
+chuyen_huong() {   # $1 = file gốc của gói khác, $2 = file của Tre sẽ thay vào
+    # Không dùng --rename: file gốc (vd os-release) không bao giờ biến mất dù chỉ 1 tích tắc
+    if ! dpkg-divert --listpackage "$1" 2>/dev/null | grep -qx "$GOI"; then
+        dpkg-divert --package "$GOI" --no-rename --divert "$1.truoc-tre" --add "$1" >/dev/null
+        if [ -e "$1" ] && [ ! -e "$1.truoc-tre" ]; then cp -a "$1" "$1.truoc-tre"; fi
+    fi
+    mkdir -p "$(dirname "$1")"
+    cp "$2" "$1.tre-moi" && mv "$1.tre-moi" "$1"
+}
+
+[ "$1" = "configure" ] || exit 0
+LAN_DAU=0
+[ -z "$2" ] && LAN_DAU=1
+
+# ---- 0. Dọn file của bản ISO đầu tiên (trước khi có gói), để không chạy nhầm bản cũ ----
+rm -f /usr/local/sbin/tre-quan-ly /usr/local/sbin/tre-khoi-phuc-hocsinh /usr/local/bin/tre-dat-hinh-nen
+if [ -f /etc/systemd/system/tre-khoi-phuc-hocsinh.service ]; then
+    rm -f /etc/systemd/system/tre-khoi-phuc-hocsinh.service \
+          /etc/systemd/system/multi-user.target.wants/tre-khoi-phuc-hocsinh.service
+fi
+rm -f /etc/lightdm/lightdm-gtk-greeter.conf.d/50-tre.conf.dpkg-tmp
+
+# ---- 1. Tên hệ điều hành ----
+chuyen_huong /usr/lib/os-release "$TRE/os-release"
+ln -sf ../usr/lib/os-release /etc/os-release
+printf '%s\n\n' 'Tre \n \l' > /etc/issue
+printf '%s\n' 'Tre' > /etc/issue.net
+sed -i "s/^VERSION=.*/VERSION=\"$(dpkg-query -W -f='${Version}' $GOI 2>/dev/null || echo 1.0) (Măng)\"/" /usr/lib/os-release || true
+
+# ---- 2. Thanh tác vụ giống Windows ----
+chuyen_huong /etc/xdg/xfce4/panel/default.xml "$TRE/xfce4-panel.xml"
+mkdir -p /etc/xdg/xfce4/xfconf/xfce-perchannel-xml
+cp "$TRE/xfce4-panel.xml" /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml
+
+# ---- 3. Hình nền mặc định (màn hình đăng nhập, tài khoản mới) ----
+HN="$TRE/hinh-nen/tre-1920x1080.jpg"
+if command -v update-alternatives >/dev/null 2>&1 && [ -e /usr/share/images/desktop-base ]; then
+    update-alternatives --install /usr/share/images/desktop-base/desktop-background \
+        desktop-background "$HN" 100 >/dev/null 2>&1 || true
+    update-alternatives --set desktop-background "$HN" >/dev/null 2>&1 || true
+fi
+
+# ---- 4. Bộ cài đặt: mặc định múi giờ Việt Nam ----
+chuyen_huong /etc/calamares/modules/locale.conf "$TRE/calamares/locale.conf"
+
+# ---- 5. Tiếng Việt + múi giờ (chỉ lần cài đầu, sau đó tôn trọng lựa chọn của giáo viên) ----
+if [ "$LAN_DAU" = 1 ]; then
+    if [ -f /etc/locale.gen ]; then
+        sed -i 's/^# *vi_VN.UTF-8 UTF-8/vi_VN.UTF-8 UTF-8/; s/^# *en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
+        grep -q '^vi_VN.UTF-8 UTF-8' /etc/locale.gen || echo 'vi_VN.UTF-8 UTF-8' >> /etc/locale.gen
+        locale-gen >/dev/null 2>&1 || true
+        update-locale LANG=vi_VN.UTF-8 || true
+    fi
+    ln -sf /usr/share/zoneinfo/Asia/Ho_Chi_Minh /etc/localtime
+    echo "Asia/Ho_Chi_Minh" > /etc/timezone
+fi
+if [ -f /etc/default/im-config ]; then
+    sed -i 's/^IM_CONFIG_DEFAULT_MODE=.*/IM_CONFIG_DEFAULT_MODE=fcitx5/' /etc/default/im-config
+fi
+
+# ---- 6. Tài khoản học sinh: không mật khẩu, không quyền quản trị ----
+if ! id hocsinh >/dev/null 2>&1; then
+    useradd --create-home --shell /bin/bash --comment "Học sinh" hocsinh
+fi
+passwd -d hocsinh >/dev/null
+for g in autologin nopasswdlogin; do groupadd -f "$g"; done
+for g in audio video plugdev netdev users autologin nopasswdlogin; do
+    getent group "$g" >/dev/null && usermod -aG "$g" hocsinh || true
+done
+gpasswd -d hocsinh sudo >/dev/null 2>&1 || true
+mkdir -p /etc/tre /var/lib/tre
+"$TRE/ap-dung-tu-dang-nhap"
+
+# ---- 7. Khôi phục tài khoản học sinh mỗi lần khởi động ----
+if command -v deb-systemd-helper >/dev/null 2>&1; then
+    deb-systemd-helper enable tre-khoi-phuc-hocsinh.service >/dev/null || true
+elif command -v systemctl >/dev/null 2>&1; then
+    systemctl enable tre-khoi-phuc-hocsinh.service >/dev/null 2>&1 || true
+fi
+
+# ---- 8. Biểu tượng ----
+gtk-update-icon-cache -q /usr/share/icons/hicolor 2>/dev/null || true
+
+# ---- 9. Màn hình động khi bật/tắt máy ----
+if command -v plymouth-set-default-theme >/dev/null 2>&1; then
+    plymouth-set-default-theme tre || true
+    MOI=$(cat /usr/share/plymouth/themes/tre/* | md5sum | cut -d' ' -f1)
+    CU=$(cat /var/lib/tre/plymouth.md5 2>/dev/null || true)
+    if [ "$MOI" != "$CU" ]; then
+        # chỉ dựng lại initramfs khi màn hình động thực sự thay đổi (đỡ tốn thời gian)
+        if command -v update-initramfs >/dev/null 2>&1 && ls /boot/vmlinuz-* >/dev/null 2>&1; then
+            update-initramfs -u >/dev/null 2>&1 || true
+        fi
+        echo "$MOI" > /var/lib/tre/plymouth.md5
+    fi
+fi
+# máy đã cài: bật "splash" để thấy màn hình động
+if [ -f /etc/default/grub ] && ! grep -q '^GRUB_CMDLINE_LINUX_DEFAULT=.*splash' /etc/default/grub; then
+    sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 splash"/' /etc/default/grub
+    if [ -f /boot/grub/grub.cfg ] && command -v update-grub >/dev/null 2>&1; then
+        update-grub >/dev/null 2>&1 || true
+    fi
+fi
+
+exit 0

@@ -1,0 +1,10 @@
+#!/bin/sh
+# Tre: bật/tắt tự đăng nhập tài khoản học sinh theo cờ /etc/tre/tat-tu-dang-nhap
+set -e
+DICH=/etc/lightdm/lightdm.conf.d/60-tre-tu-dang-nhap.conf
+mkdir -p /etc/lightdm/lightdm.conf.d
+if [ -e /etc/tre/tat-tu-dang-nhap ]; then
+    rm -f "$DICH"
+else
+    ln -sf /usr/share/tre/lightdm/60-tre-tu-dang-nhap.conf "$DICH"
+fi

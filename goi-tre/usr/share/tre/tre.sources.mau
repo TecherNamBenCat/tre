@@ -1,0 +1,6 @@
+# Tre: kho cập nhật của Tre (máy tự tải bản cập nhật từ đây)
+Types: deb
+URIs: @@DIA_CHI_KHO@@
+Suites: trixie
+Components: main
+Signed-By: /usr/share/keyrings/tre-archive-keyring.gpg
