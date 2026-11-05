@@ -1,0 +1,9 @@
+# Tre: bộ gõ tiếng Việt (Bamboo - Telex) BẬT SẴN ở mọi ô nhập
+# Bấm Ctrl + Space để tạm tắt/bật (vd khi gõ mật khẩu, lệnh)
+[Hotkey/TriggerKeys]
+0=Control+space
+
+[Behavior]
+ActiveByDefault=True
+ShareInputState=All
+ShowInputMethodInformation=True

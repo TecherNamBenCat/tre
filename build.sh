@@ -64,7 +64,7 @@ lb config \
     --iso-application "Tre" \
     --iso-publisher "Tre - He dieu hanh hoc tap" \
     --iso-volume "Tre 1.0" \
-    --bootappend-live "boot=live components locales=vi_VN.UTF-8 keyboard-layouts=us timezone=Asia/Ho_Chi_Minh quiet splash" \
+    --bootappend-live "boot=live components locales=vi_VN.UTF-8 keyboard-layouts=us timezone=Asia/Ho_Chi_Minh modprobe.blacklist=vmwgfx quiet splash" \
     "${TUY_CHON_NGUON[@]}"
 
 echo ">> Chép cấu hình Tre..."

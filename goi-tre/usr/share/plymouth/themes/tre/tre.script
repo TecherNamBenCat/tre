@@ -30,7 +30,7 @@ if (sang) global.k = tl;
 nen = Sprite(nen_img);
 nen.SetZ(-100);
 nen.SetY(-(nen_img.GetHeight() - sh) / 2);
-nen.SetOpacity(0);
+nen.SetOpacity(1);              # hiện ngay, không chờ hiệu ứng
 du_x = nen_img.GetWidth() - sw;
 
 # ---------- đàn cò ----------
@@ -72,7 +72,7 @@ if (sang) {
     den.SetZ(1000);
     den.SetOpacity(0);
 }
-chu.SetOpacity(0);
+chu.SetOpacity(1);
 
 global.tien_do = 0;
 global.nhip = 0;
@@ -87,16 +87,12 @@ fun ve_lai() {
     global.nhip = global.nhip + 1;
     t = global.nhip / 50;           # giây
 
-    a = t / 0.8; if (a > 1) a = 1;
-    nen.SetOpacity(a);
 
     # trượt chậm trong ~20 giây rồi đứng yên
     u = t / 20; if (u > 1) u = 1;
     if (sang) nen.SetX(0);          # bật máy: giữ yên, canh trái để chữ "Tre" luôn hiện đủ
     else      nen.SetX(-du_x * (1 - u));
 
-    c = (t - 0.6) / 0.8; if (c < 0) c = 0; if (c > 1) c = 1;
-    chu.SetOpacity(c);
 
     for (i = 0; i < so_co; i++) {
         quang = (t - co_tre[i] * 4) * 170 * co_toc[i] * sw / 1920;

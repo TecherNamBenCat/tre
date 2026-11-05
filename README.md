@@ -12,7 +12,7 @@ Người khởi xướng: Thầy Trần Huỳnh Nhựt Nam — Trường THCS L�
 | Nhóm | Phần mềm |
 |---|---|
 | Giao diện | XFCE nhẹ, một thanh tác vụ ở dưới, nút "Tre" giống nút Start |
-| Tiếng Việt | Giao diện tiếng Việt, bộ gõ **Bamboo** (Telex), bấm `Ctrl + Space` để bật/tắt |
+| Tiếng Việt | Giao diện tiếng Việt, bộ gõ **Bamboo (Telex) bật sẵn**; bấm `Ctrl + Space` để tạm tắt (vd khi gõ mật khẩu, lệnh) |
 | Internet | Firefox (tiếng Việt) |
 | Văn phòng | **Tre Văn phòng** (dựa trên LibreOffice): *Tre Soạn thảo, Tre Bảng tính, Tre Trình chiếu*; giao diện dạng thẻ giống Ribbon; tự lưu .docx/.xlsx/.pptx; phông Times New Roman 14 |
 | Hình nền | 16 ảnh trong `/usr/share/backgrounds/tre`; đổi bằng menu **Tre → Cài đặt → Đổi hình nền** (hoặc chuột phải màn hình nền) |
@@ -64,6 +64,9 @@ sudo ./build.sh --nguon
 ```
 
 ## 4. Thử và cài đặt
+
+> **Máy ảo VirtualBox:** Tre tự tắt driver `vmwgfx` (driver card màn hình ảo VMSVGA gây treo lúc khởi động).
+> Nếu vẫn treo, vào *Settings → Display* đổi **Graphics Controller** sang **VBoxVGA**.
 
 1. **Thử trên máy ảo trước**: tạo máy ảo mới RAM 2GB, gắn file ISO, khởi động → chọn "Live".
 2. **Ghi ra USB**: trên Windows dùng **Rufus** hoặc **balenaEtcher**, chọn file ISO, chế độ DD/Image.

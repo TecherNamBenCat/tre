@@ -111,6 +111,14 @@ if command -v plymouth-set-default-theme >/dev/null 2>&1; then
         echo "$MOI" > /var/lib/tre/plymouth.md5
     fi
 fi
+# máy ảo VirtualBox: không nạp driver vmwgfx (gây treo màn hình khởi động)
+if [ -f /etc/default/grub ] && [ "$(systemd-detect-virt 2>/dev/null || true)" = "oracle" ] \
+   && ! grep -q 'modprobe.blacklist=vmwgfx' /etc/default/grub; then
+    sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 modprobe.blacklist=vmwgfx"/' /etc/default/grub
+    if [ -f /boot/grub/grub.cfg ] && command -v update-grub >/dev/null 2>&1; then
+        update-grub >/dev/null 2>&1 || true
+    fi
+fi
 # máy đã cài: bật "splash" để thấy màn hình động
 if [ -f /etc/default/grub ] && ! grep -q '^GRUB_CMDLINE_LINUX_DEFAULT=.*splash' /etc/default/grub; then
     sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 splash"/' /etc/default/grub

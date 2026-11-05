@@ -3,7 +3,7 @@
 # Chỉ đặt khi Tre có hình nền MỚI (số trong PHIEN_BAN tăng lên), nên người dùng
 # vẫn tự đổi hình nền được; khi bản cập nhật mang hình nền mới thì máy tự đổi theo.
 THU_MUC=/usr/share/tre/hinh-nen
-HINH="/usr/share/backgrounds/tre/01-hoc-sinh-den-truong.jpg"
+HINH="/usr/share/backgrounds/tre/03-luy-tre-lang.jpg"
 PB_MOI=$(cat "$THU_MUC/PHIEN_BAN" 2>/dev/null || echo 1)
 DANH_DAU="$HOME/.config/tre/phien-ban-hinh-nen"
 [[ "$(cat "$DANH_DAU" 2>/dev/null)" == "$PB_MOI" ]] && exit 0
