@@ -85,6 +85,15 @@ done
 # Toàn bộ phần riêng của Tre nằm trong gói tre-he-thong (cũng là gói được cập nhật tự động)
 echo ">> Đóng gói tre-he-thong..."
 rm -rf "$THU_MUC/dist"
+# Phụ thuộc nào của tre-he-thong không có trong kho Debian thì bỏ, tránh dừng giữa chừng
+TRE_BO_GOI=""
+for p in $(sed -n -E 's/^Depends: //p' "$THU_MUC/goi-tre/DEBIAN/control.mau" | tr -d ' ' | tr ',' ' '); do
+    if ! apt-cache policy "$p" 2>/dev/null | grep -Eq 'Candidate: [0-9]'; then
+        echo "   BỎ QUA phụ thuộc (không có trong kho): $p"
+        TRE_BO_GOI="$TRE_BO_GOI $p"
+    fi
+done
+export TRE_BO_GOI
 "$THU_MUC/dong-goi.sh"
 mkdir -p config/packages.chroot
 cp -a "$THU_MUC"/dist/tre-he-thong_*.deb config/packages.chroot/

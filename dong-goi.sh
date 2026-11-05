@@ -18,6 +18,11 @@ cp -a "$GOC/goi-tre" "$GOI"
 sed -e "s|@@PHIEN_BAN@@|$PHIEN_BAN|" -e "s|@@NGUOI_BAO_TRI@@|$NGUOI_BAO_TRI|" \
     "$GOI/DEBIAN/control.mau" > "$GOI/DEBIAN/control"
 rm "$GOI/DEBIAN/control.mau"
+# Bỏ các phụ thuộc mà máy dựng báo là không có trong kho (build.sh truyền vào)
+for p in ${TRE_BO_GOI:-}; do
+    sed -i -E "/^(Depends|Recommends):/ { s/(: |, )$p(, |\$)/\1/; s/, \$//; s/: , /: / }" "$GOI/DEBIAN/control"
+    echo ">> Bỏ phụ thuộc không có trong kho: $p"
+done
 
 # Kho cập nhật: chỉ bật khi đã có khoá ký và đã điền địa chỉ kho
 KHOA="$GOC/kho-apt/tre-archive-keyring.gpg"
