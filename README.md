@@ -27,12 +27,19 @@ Người khởi xướng: Thầy Trần Huỳnh Nhựt Nam — Trường THCS L�
 
 ## 2. Chuẩn bị máy để dựng ISO
 
+> Chỉ cần dựng ISO khi cài **máy mới**. Máy đã cài thì tự cập nhật (mục 5).
+
 Cần **một máy chạy Debian 13 "trixie"**. Thầy đang dùng Windows thì cách dễ nhất:
 
 1. Cài **VirtualBox** (miễn phí) trên máy Windows.
 2. Tải bản cài Debian 13 tại debian.org, tạo máy ảo: RAM ≥ 4GB, ổ cứng ≥ **40GB**.
 3. Cài Debian vào máy ảo (chọn giao diện bất kỳ hoặc không cần giao diện).
-4. Chép thư mục `tre` này vào máy ảo.
+4. Lấy mã nguồn Tre về máy ảo:
+   ```bash
+   sudo apt install -y git
+   git clone https://github.com/TecherNamBenCat/tre.git
+   ```
+   Lần sau chỉ cần `cd tre && git pull` để lấy bản mới nhất.
 
 Máy dựng cần **Internet** (tải khoảng 2–3GB gói phần mềm).
 
@@ -59,8 +66,10 @@ sudo ./build.sh --nguon
 
 1. **Thử trên máy ảo trước**: tạo máy ảo mới RAM 2GB, gắn file ISO, khởi động → chọn "Live".
 2. **Ghi ra USB**: trên Windows dùng **Rufus** hoặc **balenaEtcher**, chọn file ISO, chế độ DD/Image.
-3. **Cài lên máy thật**: khởi động từ USB → biểu tượng "Install" trên màn hình → làm theo hướng dẫn.
+3. **Cài lên máy thật**: khởi động từ USB → bản Live tự vào tài khoản quản trị tạm `user` (mật khẩu `live`)
+   → mở **Install Debian** (bộ cài đặt; nếu hỏi mật khẩu thì gõ `live`) → làm theo hướng dẫn.
    Tài khoản tạo lúc cài đặt là **tài khoản giáo viên/quản trị** (có quyền sudo).
+   Cài xong, máy tự vào tài khoản `hocsinh` và tự cập nhật hằng ngày.
 
 > Nên thử trên 2–3 máy trước khi cài cả phòng.
 
