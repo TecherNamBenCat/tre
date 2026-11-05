@@ -70,7 +70,12 @@ fi
 
 # ---- 6. Tài khoản học sinh: không mật khẩu, không quyền quản trị ----
 if ! id hocsinh >/dev/null 2>&1; then
-    useradd --create-home --shell /bin/bash --comment "Học sinh" hocsinh
+    # UID 1500: chừa số 1000 cho tài khoản quản trị (Live tạo "user", bộ cài tạo tài khoản giáo viên)
+    if getent passwd 1500 >/dev/null; then
+        useradd --create-home --shell /bin/bash --comment "Học sinh" hocsinh
+    else
+        useradd --uid 1500 --create-home --shell /bin/bash --comment "Học sinh" hocsinh
+    fi
 fi
 passwd -d hocsinh >/dev/null
 for g in autologin nopasswdlogin; do groupadd -f "$g"; done
