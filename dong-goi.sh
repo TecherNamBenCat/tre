@@ -9,7 +9,7 @@ GOC="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck disable=SC1091
 . "$GOC/cau-hinh/kho-cap-nhat.conf"
 
-PHIEN_BAN="${TRE_PHIEN_BAN:-1.$(date -u +%Y%m%d.%H%M)}"
+PHIEN_BAN="${TRE_PHIEN_BAN:-1.$(date -u +%Y%m%d.%H%M%S)}"
 TAM="$(mktemp -d)"
 trap 'rm -rf "$TAM"' EXIT
 GOI="$TAM/tre-he-thong"
