@@ -90,7 +90,10 @@ case "${1:-}" in
         G=/etc/default/grub
         [[ -f "$G" ]] || { echo "Không thấy $G"; exit 1; }
         case "${2:-}" in
-            bat) grep -q '^GRUB_CMDLINE_LINUX_DEFAULT=.*splash' "$G" || \
+            bat) apt-get install -y plymouth
+                 plymouth-set-default-theme tre
+                 update-initramfs -u
+                 grep -q '^GRUB_CMDLINE_LINUX_DEFAULT=.*splash' "$G" || \
                  sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 splash"/' "$G" ;;
             tat) sed -i '/^GRUB_CMDLINE_LINUX_DEFAULT=/ s/ *splash//' "$G" ;;
             *)   echo "Dùng: sudo tre-quan-ly man-hinh-dong bat|tat"; exit 1 ;;

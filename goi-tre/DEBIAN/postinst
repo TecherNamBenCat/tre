@@ -99,19 +99,7 @@ fi
 gtk-update-icon-cache -q /usr/share/icons/hicolor 2>/dev/null || true
 
 # ---- 9. Màn hình động khi bật/tắt máy ----
-if command -v plymouth-set-default-theme >/dev/null 2>&1; then
-    plymouth-set-default-theme tre || true
-    MOI=$(cat /usr/share/plymouth/themes/tre/* | md5sum | cut -d' ' -f1)
-    CU=$(cat /var/lib/tre/plymouth.md5 2>/dev/null || true)
-    if [ "$MOI" != "$CU" ]; then
-        # chỉ dựng lại initramfs khi màn hình động thực sự thay đổi (đỡ tốn thời gian)
-        if command -v update-initramfs >/dev/null 2>&1 && ls /boot/vmlinuz-* >/dev/null 2>&1; then
-            update-initramfs -u >/dev/null 2>&1 || true
-        fi
-        echo "$MOI" > /var/lib/tre/plymouth.md5
-    fi
-fi
-# Màn hình động KHÔNG tự bật (tránh treo trên một số máy/máy ảo).
-# Bật trên máy thật: sudo tre-quan-ly man-hinh-dong bat
+# KHÔNG cài sẵn và KHÔNG đụng tới initramfs (từng làm hỏng khởi động của ISO).
+# Giáo viên tự bật trên máy thật: sudo tre-quan-ly man-hinh-dong bat
 
 exit 0

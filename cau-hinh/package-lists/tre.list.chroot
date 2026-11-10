@@ -6,6 +6,7 @@
 
 # ---- Khởi động trực tiếp (live) và bộ cài đặt ----
 live-boot
+live-boot-initramfs-tools
 live-config
 live-config-systemd
 calamares
