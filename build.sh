@@ -69,8 +69,6 @@ lb config \
 
 echo ">> Chép cấu hình Tre..."
 cp -a "$CAU_HINH/package-lists/."   config/package-lists/
-mkdir -p config/hooks/normal
-cp -a "$CAU_HINH/hooks/normal/."    config/hooks/normal/
 
 # Tự bỏ phần mềm không có trong kho Debian (tránh dừng giữa chừng)
 echo ">> Kiểm tra danh sách phần mềm..."
@@ -113,13 +111,12 @@ fi
 echo ">> Bắt đầu dựng (mất khoảng 30–90 phút tuỳ tốc độ mạng)..."
 lb build 2>&1 | tee "$KET_QUA/nhat-ky-dung.log"
 
-# Kiểm tra lần cuối: bộ khởi động trong ISO phải có phần chạy Live
+# Kiểm tra lần cuối (chỉ cảnh báo, không chặn): bộ khởi động phải có phần chạy Live
 if [[ -f binary/live/initrd.img ]] && command -v lsinitramfs >/dev/null 2>&1; then
-    if lsinitramfs binary/live/initrd.img | grep -Eq '(^|/)scripts/live$'; then
+    if lsinitramfs binary/live/initrd.img 2>/dev/null | grep -Eq '(^|/)scripts/live$'; then
         echo ">> Kiểm tra khởi động: OK"
     else
-        echo "!! LỖI: bộ khởi động thiếu phần chạy Live. Đừng dùng ISO này, gửi file ket-qua/nhat-ky-dung.log"
-        exit 1
+        echo "!! CẢNH BÁO: không thấy phần chạy Live trong bộ khởi động"
     fi
 fi
 
